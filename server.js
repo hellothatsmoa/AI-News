@@ -521,5 +521,6 @@ app.listen(PORT, () => {
   console.log(`🔐 Authentication: ${process.env.BE_TOKEN ? 'Enabled' : 'Disabled'}`);
   console.log(`🌐 Render URL: ${process.env.RENDER_EXTERNAL_URL || 'Not set'}`);
   console.log(`📝 Available endpoints: /health, /tools/summarize_article, /tools/fal_generate, /tools/fal_flux_lora_generate, /tools/process_news_url`);
+  console.log(`🔄 Server version: 2.0 - Full workflow enabled`);
 });
 
