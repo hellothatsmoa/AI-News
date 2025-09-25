@@ -1,0 +1,274 @@
+{
+  "name": "AI News Processing Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "options": {
+          "sheetId": "YOUR_GOOGLE_SHEET_ID",
+          "range": "A:A",
+          "options": {
+            "valueInputOption": "USER_ENTERED"
+          }
+        }
+      },
+      "id": "google-sheets-trigger",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-oauth",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "url-check",
+              "leftValue": "={{ $json.A1 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            },
+            {
+              "id": "url-format",
+              "leftValue": "={{ $json.A1 }}",
+              "rightValue": "https://",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "url-validation",
+      "name": "URL Validation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8787/tools/process_news_url",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.A1 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ai-news-processor",
+      "name": "AI News Processor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 200],
+      "notes": "Processes news URL through AI News server"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "success-check",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "success-check",
+      "name": "Success Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "range": "B:F",
+        "options": {
+          "valueInputOption": "USER_ENTERED"
+        },
+        "valuesToSend": "defineBelow",
+        "values": {
+          "values": [
+            [
+              "={{ $json.title }}",
+              "={{ $json.summary }}",
+              "={{ $json.instagram_caption }}",
+              "={{ $json.saved_image }}",
+              "={{ $json.timestamp }}"
+            ]
+          ]
+        }
+      },
+      "id": "update-sheet",
+      "name": "Update Sheet with Results",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1120, 100],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-oauth",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "range": "A:A",
+        "options": {
+          "valueInputOption": "USER_ENTERED"
+        },
+        "valuesToSend": "defineBelow",
+        "values": {
+          "values": [
+            [""]
+          ]
+        }
+      },
+      "id": "clear-url",
+      "name": "Clear Processed URL",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1120, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-oauth",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "AI News Processing Failed: {{ $json.error }}",
+        "additionalFields": {}
+      },
+      "id": "error-notification",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [1120, 400],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "slack-oauth",
+          "name": "Slack OAuth2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "URL Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL Validation": {
+      "main": [
+        [
+          {
+            "node": "AI News Processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "AI News Processor": {
+      "main": [
+        [
+          {
+            "node": "Success Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Check": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet with Results",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Clear Processed URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "ai-news-mcp-tools",
+  "version": "1.0.0",
+  "description": "Minimal Node/Express backend for AI News MCP tools",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "express",
+    "openai",
+    "fal-ai",
+    "n8n"
+  ],
+  "author": "",
+  "license": "MIT"
+}

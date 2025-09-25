@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: ai-news-server
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FAL_KEY
+        sync: false
+      - key: BE_TOKEN
+        sync: false
+      - key: OPENAI_BASE_URL
+        sync: false
