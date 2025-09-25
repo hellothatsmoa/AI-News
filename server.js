@@ -519,5 +519,6 @@ app.listen(PORT, () => {
   console.log(`🚀 AI News MCP Tools server running on http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`🔐 Authentication: ${process.env.BE_TOKEN ? 'Enabled' : 'Disabled'}`);
+  console.log(`🌐 Render URL: ${process.env.RENDER_EXTERNAL_URL || 'Not set'}`);
 });
 
