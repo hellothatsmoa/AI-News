@@ -104,7 +104,16 @@ const authenticateToken = (req, res, next) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: true, version: "2.0", timestamp: new Date().toISOString() });
+});
+
+// Test endpoint to verify deployment
+app.get('/test', (req, res) => {
+  res.json({ 
+    message: "Deployment test successful", 
+    version: "2.0",
+    endpoints: ["/health", "/test", "/tools/summarize_article", "/tools/process_news_url"]
+  });
 });
 
 // Summarize article endpoint
