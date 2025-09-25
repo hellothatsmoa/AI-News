@@ -106,8 +106,9 @@ const authenticateToken = (req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({ 
     ok: true, 
-    version: "3.0", 
+    version: "4.0 - RENDER DEBUG", 
     timestamp: new Date().toISOString(),
+    message: "This should definitely show up if Render is working!",
     endpoints: ["/health", "/test", "/tools/summarize_article", "/tools/process_news_url"]
   });
 });
@@ -535,6 +536,6 @@ app.listen(PORT, () => {
   console.log(`🔐 Authentication: ${process.env.BE_TOKEN ? 'Enabled' : 'Disabled'}`);
   console.log(`🌐 Render URL: ${process.env.RENDER_EXTERNAL_URL || 'Not set'}`);
   console.log(`📝 Available endpoints: /health, /tools/summarize_article, /tools/fal_generate, /tools/fal_flux_lora_generate, /tools/process_news_url`);
-  console.log(`🔄 Server version: 2.2 - Build test`);
+  console.log(`🔄 Server version: 5.0 - CACHE CLEAR TEST`);
 });
 
